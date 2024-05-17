@@ -13,7 +13,7 @@
 
 #pragma warning(disable: 4996)
 
-int fillFlightInfo(struct FlightInfo flights[], char* destination, char* date, int fillCounter);
+int fillFlightInfo(struct FlightInfo* flights, char* destination, char* date);
 void printFlightInfo(struct FlightInfo flights[]);
 
 const int kMaxNumStrings = 10;
@@ -41,7 +41,7 @@ int main(void)
 		fgets(inputDate, kPairCharLimit, stdin);
 		inputDate[strcspn(inputDate, "\n")] = '\0';
 
-		if (fillFlightInfo(flights, inputDestination, inputDate, counter) == 0)
+		if (fillFlightInfo(&flights[counter], inputDestination, inputDate) == 0)
 		{
 			printf("Out of memory.\n");
 			return 0;
@@ -54,6 +54,7 @@ int main(void)
 	{
 		free(flights[counter].destination);
 		free(flights[counter].date);
+
 	}
 	return 0;
 }
@@ -66,24 +67,23 @@ int main(void)
 // flights[]: An array used to store flight information.
 // destination: A string containing the user-entered destination.
 // date: A string containing the user-entered date.
-// fillCounter: A counter used to identify which array elements to fill.
 // RETURNS :
 // 1: SUCCESS
 // 0: ERROR
-int fillFlightInfo(struct FlightInfo flights[], char* destination, char* date, int fillCounter)
+int fillFlightInfo(struct FlightInfo* flights, char* destination, char* date)
 {
-	if ((flights[fillCounter].destination = (char*)malloc(kPairCharLimit)) == NULL)
+	if ((flights->destination = (char*)malloc(strlen(destination) + 1)) == NULL)
 	{
 		return 0;
 	}
 
-	if ((flights[fillCounter].date = (char*)malloc(kPairCharLimit)) == NULL)
+	if ((flights->date = (char*)malloc(strlen(date) + 1)) == NULL)
 	{
 		return 0;
 	}
 
-	strcpy(flights[fillCounter].destination, destination);
-	strcpy(flights[fillCounter].date, date);
+	strcpy(flights->destination, destination);
+	strcpy(flights->date, date);
 
 	return 1;
 }
@@ -91,7 +91,7 @@ int fillFlightInfo(struct FlightInfo flights[], char* destination, char* date, i
 //
 // FUNCTION : printFlightInfo
 // DESCRIPTION :
-// Prints all the elements of the flight arrray.
+// Prints all the elements of the flight array.
 // PARAMETERS :
 // flights[]: The array used to store flight information.
 // RETURNS :
